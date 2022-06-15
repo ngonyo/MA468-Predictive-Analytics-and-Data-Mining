@@ -1,0 +1,74 @@
+---
+title: "Class Imbalance"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Having disproportionate values in the class variable leads to class imbalance problem. Having too few instances of one class response value will lead to less accurate predictions for this class compared to others with a higher proportion of instances
+
+We have two solutions to this problem: 1 - undersampling 2 - oversampling
+
+```{R}
+setwd("C:/Users/ngonyo/Downloads")
+dir()
+DIU = read.table("DishonestIUsers.txt", sep="\t", header = T)
+head(DIU)
+dim(DIU)
+
+#looks like all 5 variables are qualitative so we need to convert them to factor variables
+DIU[, 1:5] = lapply(DIU[, 1:5], factor)
+summary(DIU)
+
+#in this dataset, we want to predict the "TrustScore" based on the other variables. We can see TrustScore has 97 instances of "untrustworthy" and 225 of "trustworthy" users. That means one class type is about 30% of the dataset, which may lead to a class imbalance problem.
+
+#Soltuion 1 - Undersampling: we will take the 97 untrustworthy users and combine them with 97 randomly selected trustworthy users to balance the class.
+#subset untrustworth and trustworthy seperately
+untrust = subset(DIU, TrustScore == "untrustworthy")
+summary(untrust)
+dim(untrust)
+
+trust = subset(DIU, TrustScore == "trustworthy")
+summary(trust)
+
+#now create a random sample of 97 trustworthy users to combine with the 97 trustworthy users
+#rnd = sample(1:225, 97, replace = FALSE)
+trust97 = trust[rnd, ]
+summary(trust97)
+dim(trust97)
+
+#now let's combine the 97 trustworthy users with the random sample of 97 trustworthy users
+BalancedDIU1 = rbind(untrust, trust97)
+summary(BalancedDIU1)
+dim(BalancedDIU1)
+
+###################
+
+#Oversampling: when all the instances of the majority class type is kept while duplicating the instances of the majority class type to match the number of instances in the majority class type
+summary(DIU)
+
+#subset untrustworth and trustworthy seperately
+untrust = subset(DIU, TrustScore == "untrustworthy")
+summary(untrust)
+dim(untrust)
+
+trust = subset(DIU, TrustScore == "trustworthy")
+summary(trust)
+dim(trust)
+
+#let's create a repition of 1:97 twice and extract those records from the untrust dataset
+rep97=rep(1:97, 2)
+untrust194 = untrust[rep97, ] 
+summary(untrust194)
+dim(untrust194)
+
+#now let's combine both dataset
+BalancdedDIU2 = rbind(untrust194, trust)
+summary(BalancdedDIU2)
+
+#now this BalancedDIU2 is going to be your Train dataset which you will be using to train all classification algorithms
+#assuming you had a different test dataset, 
+
+```

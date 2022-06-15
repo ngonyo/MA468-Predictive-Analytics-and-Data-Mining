@@ -1,0 +1,66 @@
+---
+title: "PCA Wine"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We are going to apply PCA (Principal component analysis) to Winetrain dataset. The goal here is to select the subset of variables which contains the majority of the variability of the dataset
+
+
+```{r}
+#Question 1: read the txt file
+setwd("C:/Users/ngonyo/Downloads")
+dir()
+wine = read.table("WineTrain.txt", sep=",", header = T)
+dim(wine) #there are 14 variables in the dataset prior to PCA
+
+#Scaling is required before applying PCA. we will use built-in scaling by center, using prcomp()
+#we will both scale and apply PCA as follows:
+
+winePCA = prcomp(wine, scale. = TRUE, center = TRUE)
+
+#Now lets display the standard deviations, proportions, and cumulative proportions of variances of each PC
+summary(winePCA)
+#based on the above output the first 8 PC's explain at least 90% of the variance of the dataset. if using this method we would include first 8 PC's
+#based on Eigenvalue method we would include first 3 PC's as their standard deviations are greater than 1
+
+#creating the screeplot
+plot(winePCA, type = "l", pch = 16)
+#based on screeplot method we would stop after 4th PC as elbow then straightens out at 5th point
+#if this project contained advanced anayltics we would keep first 8 as that maximizes variance compared to other methods
+
+#display details of each PC including how ea original variable correlated in each PC
+winePCA
+
+###STEP 2####
+#Now we will look at first 8 PC's, picking variables that are highly correlated within that PC
+#we will use |r|>=.4
+winePCA
+#after scanning each of the first 8 PC's the variables which will be dropped are CVs, Total.phoeols, Flavanoids, OD280.OD315.of.diluted.wines, Proline
+drop = c(1, 8, 9, 13, 14)
+NewWineTrain = wine[, -drop]
+
+```
+
+
+```{r}
+#now applying PCa for heartfail dataset
+dir()
+heart = read.table("HeartFailureTrain.txt", sep="\t", header = T)
+head(heart)
+colnames(heart)
+
+heartPCA = prcomp(heart, scale=T, center = T)
+summary(heartPCA) #pca basic statistics
+plot(heartPCA, type = "l", pch = 16) #screeplot
+
+#In this case we want to maintain 80% of the variance of the dataset so we will keep the first 9 PC's
+heartPCA #detailed PCA statistics
+
+#if using the eigenvalue method we will select first 6 PC's as their SD>1
+#using screeplot, would use first 5 as trendline starts at 6
+
+```

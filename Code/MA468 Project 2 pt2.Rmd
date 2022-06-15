@@ -1,0 +1,104 @@
+---
+title: "468 Project 2"
+author: "Jack Michalowski"
+date: "4/3/2022"
+output: word_document
+---
+
+##### K-Prototype #####
+
+```{r}
+
+setwd("~/Documents/MA468/")
+data=read.table("AbsentAfterPCA.txt", sep = "\t", header = T)
+head(data)
+summary(data)
+
+#See about factor variable changing
+data$ID=as.factor(data$ID)
+data$Reason.for.absence=as.factor(data$Reason.for.absence)
+data$Month.of.absence=as.factor(data$Month.of.absence)
+data$Disciplinary.failure=as.factor(data$Disciplinary.failure)
+data$Education=as.factor(data$Education)
+data$Social.drinker=as.factor(data$Social.drinker)
+summary(data)
+
+require(clustMixType)
+
+set.seed(123456)
+#First run kproto() for k=2
+UKLKprot2=kproto(data, 2)
+UKLKprot2
+UKLKprot2$cluster
+UKLKprot2$tot.withinss
+data$cluster = UKLKprot2$cluster
+head(data)
+
+###examing each variable's cluster population closely#####
+datacluster1=subset(data, cluster == "1")
+datacluster1
+
+datacluster2=subset(data, cluster == "2")
+datacluster2
+
+dim(datacluster1)
+dim(datacluster2)
+
+boxplot(datacluster1)
+boxplot(datacluster2)
+
+summary(datacluster1)
+summary(datacluster2)
+
+
+#findings:
+#transportation expense much higher in first cluster
+#education of higher levels much more present in second cluster. social drinker much more common in first cluster
+#distance from residence to work much lower in first cluster
+attach(data)
+summary(data)
+require(ggplot2)
+ggplot(data = data) + geom_point(mapping = aes(x = Distance.from.Residence.to.Work, y = Transportation.expense , color = as.factor(cluster)))+labs(x="Distance from Residence to work", y="Transportation Expense", title = "Cluster Comparison Based on Distance o Work and Transportation Expense")
+
+ggplot(data, aes(x =Distance.from.Residence.to.Work, y = Transportation.expense)) + geom_point(color = as.factor(cluster)) + facet_wrap(~ Social.drinker)+labs(x="Age", y="Absenteeism time in Hours", title = "Absenteeism time in hours based on Age and day of the week")
+
+ggplot(data = data) + geom_point(mapping = aes(x = Education, y = Transportation.expense , color = as.factor(cluster)))+labs(x="Education", y="Transportation Expense", title = "Cluster Comparison Based on Education and Transportation Expense")
+
+ggplot(data = data) + geom_point(mapping = aes(x = Education, y = Transportation.expense , color = as.factor(Social.drinker)))+labs(x="Education", y="Transportation Expense", title = "Cluster Comparison Based on Education and Transportation Expense")
+
+
+ggplot(data, aes(fill=Education, x=cluster)) + 
+    geom_bar(position="dodge")+labs(x="Cluster (1, 2)", y="count", title = "Cluster Comparison Based on Education")
+
+
+```
+
+
+```{r}
+#Let's see the cluster output in a graphical way
+clprofiles(UKLKprot2, data)
+
+
+TWSS=array(0,25)
+for(k in 1:25){
+  kprot=kproto(data, k)
+  TWSS[k]=kprot$tot.withinss
+}
+plot(1:25, TWSS, xlab="Number of Clusters", ylab="TWSS", pch=16, type="b")
+
+SIL=array(0,25)
+for(k in 2:25){
+  kprot=kproto(data, k)
+  SIL[k]=validation_kproto(method="silhouette", object=kprot)
+}
+plot(2:25, SIL[2:25], xlab="Number of Clusters", ylab="Silhouette Measure for Clustering", pch=16, type="b")
+
+#Optimal number of clusters seems to be 2 according to max value of silhouette measure and TWSS curve
+
+clprofiles(UKLKprot2, data)
+
+```
+
+
+
+

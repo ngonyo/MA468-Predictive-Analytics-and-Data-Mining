@@ -1,0 +1,101 @@
+---
+title: "Naive Bayes"
+author: "NGonyo"
+date: "2/25/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+TTrain=read.table("TitanicTrain.txt", sep="\t",header=T)
+head(TTrain)
+TTest = read.table("TitanicTest.txt", sep = "\t", header = T)
+head(TTest)
+
+#Let's convert qualitative variables in to factor variables
+cols = c(3,5)
+TTrain[, cols]=lapply(TTrain[, cols], factor)
+summary(TTrain)
+
+```
+
+NaiveBayes manual example
+
+```{r}
+#Lets see how to get the condition probabilitities of the dataset, ie manually calculating the NaiveBayes
+#in real world we would just use naiveBayes function
+nrow(TTrain)
+#Survived variable
+table(TTrain$Survived)
+
+#PClass probabilities based on survived or not
+table(PClass = TTrain$PClass, Survived = TTrain$Survived)
+
+#Sex probabilities based on survived or not
+table(PClass = TTrain$Sex, Survived = TTrain$Survived)
+
+#next under survived = yes and survived = no compute the mean and variance for age variable
+SurvivedNo = subset(TTrain, Survived == 0)
+SurvivedYes = subset(TTrain, Survived == 1)
+
+#mean and variance of Age for Survived = No
+mean(SurvivedNo$Age)
+sd(SurvivedNo$Age)^2
+
+#mean and variance of Age for Survived = Yes
+mean(SurvivedYes$Age)
+sd(SurvivedYes$Age)^2
+
+```
+
+Naive Bayes algo
+
+```{r}
+#eager learner learns and creates a model first and is used for prediction ex logistic regression, decision tree
+#lazy learner doesnt create model but identifies class value
+#naive bayes is an eager learner
+require(e1071)
+NBSurvived = naiveBayes(as.factor(Survived)~Age+PClass+Sex, data = TTrain)
+NBSurvived
+
+#Next we can predict the Test dataset
+TTest[, c(3,5)] = lapply(TTest[, c(3,5)], factor)
+summary(TTest)
+
+NBPredict = predict(NBSurvived, newdata=data.frame(TTest[, 3:5]), type = "class")
+table(NBPredict)
+
+#Confusion matrix
+ConfMat = table(Actual = TTest$Survived, Predicted = NBPredict)
+ConfMat
+
+
+#ROC Curve
+require(pROC)
+ROC.NB = roc(TTest$Survived, as.numeric(NBPredict))
+ROC.NB
+plot(ROC.NB)
+```
+
+Multiple ROC Curves to compare algorithms
+
+```{r}
+#plotting this with ROC curve from deicison tree to compare
+#now roc curve
+require(pROC)
+ROC.DT = roc(TTest$Survived, as.numeric(DTPredict))
+ROC.DT
+plot(ROC.DT)
+
+plot(ROC.NB);lines(ROC.DT)
+plot(ROC.NB, col = "green");lines(ROC.DT, col = "purple")
+plot(ROC.NB, col = "green");lines(ROC.DT, col = "purple"); legend("bottomright", legend = c("NaiveBayes", "DecisionTree"), col=c("green", "purple"), pch=c(7,7))
+
+
+
+```

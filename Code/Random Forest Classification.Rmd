@@ -1,0 +1,57 @@
+---
+title: "Random Forest"
+author: "NGonyo"
+date: "3/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+TTrain=read.table("TitanicTrain.txt", sep="\t",header=T)
+head(TTrain)
+TTest = read.table("TitanicTest.txt", sep = "\t", header = T)
+head(TTest)
+
+#Let's convert qualitative variables in to factor variables
+cols = c(3,5)
+TTrain[, cols]=lapply(TTrain[, cols], factor)
+summary(TTrain)
+
+#to apply Random Forests, we need to install the package 'randomForest'
+require(randomForest)
+#lets first create the random forest model
+RMT = randomForest(as.factor(Survived)~Age+PClass+Sex, data = TTrain, importance = TRUE)
+RMT
+
+#Let's predict for the test dataset
+#first convert the qualitative variables in the test dataset the factor variables
+cols = c(3,5)
+TTest[, cols]=lapply(TTest[, cols], factor)
+summary(TTest)
+
+#prediction
+RMTPredict = predict(RMT, newdata = data.frame(TTest[, 3:5]), type = "class")
+table(TBagPred)
+
+
+#next create the confusion matrix and ROC curves to evaluate classification performance
+ConfMat = table(Actual = TTest$Survived, Predicted = RMTPredict)
+ConfMat
+
+Accuracy = (ConfMat[1,1]+ConfMat[2,2])/nrow(TTest)
+Accuracy*100
+
+#now roc curve
+require(pROC)
+ROC.RF = roc(TTest$Survived, as.numeric(RMTPredict))
+ROC.RF
+plot(ROC.DT)
+
+```

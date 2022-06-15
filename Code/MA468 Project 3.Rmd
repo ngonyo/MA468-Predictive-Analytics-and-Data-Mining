@@ -1,0 +1,148 @@
+---
+title: "Untitled"
+author: "NGonyo"
+date: "5/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+ECLAT
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+data1=read.transactions("TransDataEclat2.csv", sep = ",", header = T)
+head(data1)
+data1
+itemFrequencyPlot(data1)
+require(arules)
+require(Matrix)
+
+#inspect(data) it is reading 
+#ECLAT
+#The above does not show the entire dataset as we would expect after reading the dataset as a table. 
+
+#Eclat works in two steps to generate rules, unlike in apriori() function we used last time.
+#(1) Eclat will first generate frequent itemsets using eclat() function 
+#(2) and then we need to use ruleInduction() function to generate the rules.
+
+#Let's first use eclat() function to generate frequent itemsets
+itemsets=eclat(data1, parameter=list(supp=0.1, minlen=2))
+itemsets
+inspect(itemsets)
+
+itemFrequency(data1)
+itemFrequencyPlot(data1, col="green")
+
+#e top 10 frequent items are:1-Vegetables&Fruits 2-Kirana 3-Miscellaneous 4-Toiletries 5-Biscuits 		6-Cosmetics 7-Snacks 8-Utensils 9-Masala 10-Bedding
+#corresponding column numbers are 
+summary(data1)
+
+#Now that we have the frequent itemsets, next is the ruleInduction.
+rules=ruleInduction(itemsets, data1, confidence=0.8, contol=list(verbose=FALSE))
+rules
+inspect(rules)
+
+#Let's remove the redundant rules
+Redundant=is.redundant(rules)
+Redundant
+
+UR=which(Redundant==FALSE)
+unique.rules=rules[UR]
+inspect(unique.rules)
+
+#We can generate frequent-item lists and plot
+
+
+```
+
+ECLAT PART 2
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+datafinal=read.table("TransDataFinal2.csv", sep=",", header=T)
+head(datafinal)
+str(datafinal)
+summary(datafinal)
+#To use 'apriori' algorithm we need to use 'arules' package.
+#Let's install and load the 'arules' package
+require(arules)
+
+datafinal[, 1:19]=lapply(datafinal[, 1:19], factor)
+summary(datafinal)
+dataeclat = datafinal[, c(1,3,4,5,7,8,9,11,12,13)]
+summary(dataeclat)
+
+#let's blindly generate the assocation rules based on the default settings of the apriori function.
+rulesapriori=apriori(dataeclat)
+
+rulesapriori1 = apriori(dataeclat, parameter = list(minlen = 3, maxlen = 5, supp = 0.28, confidence = 0.55), appearance = list(rhs=c("VEGETABLES.FRUITS=1"), default = "lhs"))
+rulesapriori1
+inspect(rulesapriori1)
+
+rulesapriori1 = apriori(dataeclat, parameter = list(minlen = 2, maxlen = 5, supp = 0.15, confidence = 0.4), appearance = list(rhs=c("KIRANA.DRY_FOODS.=1"), default = "lhs"))
+rulesapriori1
+inspect(rulesapriori1)
+
+rulesapriori2 = apriori(dataeclat, parameter = list(minlen = 2, maxlen = 5, supp = 0.1, confidence = 0.4), appearance = list(rhs=c("VEGETABLES.FRUITS=1","SNACKS=1", "UTENSILS=1", "KIRANA.DRY_FOODS.=1", "MISCELLANEOUS=1", "BISCUITS=1", "TOILETRIES=1", "COSMETICS=1", "BEDDING=1", "MASALA.OIL_SPICES.=1"), default = "lhs"))
+rulesapriori2
+inspect(rulesapriori2)
+
+rulesapriori2 = apriori(dataeclat, parameter = list(minlen = 2, maxlen = 5, supp = 0.15, confidence = 0.37), appearance = list(rhs=c("SNACKS=1", "UTENSILS=1", "MISCELLANEOUS=1", "BISCUITS=1", "TOILETRIES=1", "COSMETICS=1", "BEDDING=1", "MASALA.OIL_SPICES.=1"), default = "lhs"))
+rulesapriori2
+inspect(rulesapriori2)
+
+
+
+
+```
+
+APRIORI
+
+```{r}
+library(arules)
+search() 
+unloadNamespace("arules") 
+update.packages("arules") 
+library(arules)
+
+setwd("~/Documents/MA468/")
+dir()
+datafinal=read.table("TransDataFinal2.csv", sep=",", header=T)
+head(datafinal)
+str(datafinal)
+summary(datafinal)
+#To use 'apriori' algorithm we need to use 'arules' package.
+#Let's install and load the 'arules' package
+require(arules)
+
+datafinal[, 1:19]=lapply(datafinal[, 1:19], factor)
+summary(datafinal)
+
+#let's blindly generate the assocation rules based on the default settings of the apriori function.
+rulesapriori=apriori(datafinal)
+
+rulesapriori2 = apriori(datafinal, parameter = list(minlen = 4, supp = 0.85, confidence = 0.95))
+rulesapriori2
+inspect(rulesapriori2)
+
+
+rulesapriori3 = apriori(datafinal, parameter = list(minlen = 2, maxlen = 5, supp = 0.25, confidence = 0.59), appearance = list(rhs=c("VEGETABLES.FRUITS=1", "CLOTHES=1", "SNACKS=1", "UTENSILS=1", "KIRANA.DRY_FOODS.=1", "COLD_DRINKS=1", "MISCELLANEOUS=1" ), default = "lhs"))
+rulesapriori3
+inspect(rulesapriori3)
+
+
+
+rulesapriori3 = apriori(datafinal, parameter = list(minlen = 1, maxlen = 4, supp = 0.15, confidence = 0.58), appearance = list(rhs=c("VEGETABLES.FRUITS=1", "CLOTHES=1", "SNACKS=1", "UTENSILS=1", "KIRANA.DRY_FOODS.=1", "COLD_DRINKS=1", "MISCELLANEOUS=1", "BISCUITS=1", "TOILETRIES=1", "CAKES.CHOCLATES=1", "COSMETICS=1", "BEDDING=1", "MASALA.OIL_SPICES.=1", "SOAPS.SHAMPOOS=1", "MILK_PRODUCTS=1", "TOYS=1", "HOT_DRINKS=1", "INFANTS.KIDS=1", "HOME_APPLICANCES=1"), default = "lhs"))
+rulesapriori3
+inspect(rulesapriori3)
+
+
+rulesapriori4 = apriori(datafinal, parameter = list(minlen = 2, maxlen = 4, supp = 0.15, confidence = 0.44), appearance = list(rhs=c("CLOTHES=1", "SNACKS=1", "UTENSILS=1", "KIRANA.DRY_FOODS.=1", "COLD_DRINKS=1", "MISCELLANEOUS=1", "BISCUITS=1", "TOILETRIES=1", "CAKES.CHOCLATES=1", "COSMETICS=1", "BEDDING=1", "MASALA.OIL_SPICES.=1", "SOAPS.SHAMPOOS=1", "MILK_PRODUCTS=1", "TOYS=1", "HOT_DRINKS=1", "INFANTS.KIDS=1", "HOME_APPLICANCES=1"), default = "lhs"))
+rulesapriori4
+inspect(rulesapriori4)
+
+```

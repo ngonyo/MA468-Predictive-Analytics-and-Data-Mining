@@ -1,0 +1,109 @@
+---
+title: "468 Day 1"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We are going to analyze the adult dataset. We will be describing both quantitative and qualitative variables in the dataset.
+
+```{r}
+setwd("C:/Users/ngonyo/Downloads")
+dir()
+adultdata = read.table("AdultData.txt", sep="\t", header = T)
+head(adultdata) #show first 5 rows of dataset to see if imported correctly
+str(adultdata) #show info about dataset structure
+colnames(data) #show column names
+
+
+#let's convert the qualitative variables to factor variables using 'lapply()' function
+cols=c(2, 4, 6:10, 14:16)
+adultdata[, cols] = lapply(adultdata[, cols], factor)
+str(adultdata)
+
+#Assuming we are not working with another dataset that has same variable names, we can attach the dataset to seperate the variables
+attach(adultdata)
+
+#summary statistics of dataset
+summary(adultdata)
+
+###let's start analyzing quantiative variables
+summary(age)
+#age ranges from 17 to 90 years. be sure to interpret all the summary statistics
+
+sd(age)
+var(age)
+#the average difference between the ages in the dataset and mean age is 13.13667 years
+
+#graphical descriptive statistics for quantiative variables
+hist(age) #we can see age is right skewed
+
+#desnity curve: identifies the shape of the histogram
+density(age)
+plot(density(age), col = "purple")
+
+#normal probability plot
+qqnorm(age) #qq plot verifies the non=normality of the age variable
+
+#boxplot
+boxplot(age)
+boxplot(age, horizontal = T, pch = 16)
+
+#what are the outlier values (outlier ages)
+boxplot(age, horizontal = T, pch = 16)$out
+AgeOut = boxplot(age, horizontal = T)$out
+length(AgeOut)
+summary(AgeOut) #we can see that the older people make up the outliers which makes sense as we saw there is a right skew previously
+
+###analyzing qualitative/factor variables
+#Let's work on occupation variable
+summary(occupation) #gives frequency disribution of the qualitative variable
+#table() will also give you same output with variable name
+table(occupation)
+
+#next let's create a relative frequency table (table of proportion)
+OccuTbl = table(occupation)
+OccuTbl
+prop.table(OccuTbl)
+
+OccuPropTbl = prop.table(OccuTbl)
+round(OccuPropTbl, 4)
+
+#Graphical descriptive statistics for qualitative/factor variables: barchart, piechart
+#for both barhcart and pie chart we need to pass a table or prop.table rather than variable itself
+barplot(OccuTbl)
+
+barplot(OccuProbTbl, xlab="Occupation", main= "Proportions of occupations")
+barplot(OccuProbTbl, xlab="Occupation", main= "Proportions of occupations", ylim=c(0,1))
+#in a case like this, where the area is very small, no need to extend the y-axis, ie previous plot is better in this case
+
+#pie chart
+pie(OccuTbl)
+
+#let's look at the entire dataset of quantiative variables
+colnames(adultdata)
+QttVars=c(1, 3, 5, 11:13)
+
+#let's see which quantitative variables have outliers
+boxplot(adultdata[, QttVars], horizontal = F, pch = 16)
+
+#looks like fntwgt has the most outliers. let's remove rows from the dataset where they have outliers based on fntwgt
+#1. identify outliers in fntwgt
+#2. identify row numbers that have outliers under fntwgt
+#3. now remove those rows from the dataset
+
+fntwgOut = boxplot(fntwgt)$out #step1
+fntwgOutRows = which(fntwgt %in% fntwgOut) #step 2
+fntwgOutRows
+newdata = adultdata[-fntwgOutRows, ] #step3
+dim(newdata)
+
+#as loop - finish later
+# for(i in 1:length(QttVars)){
+#   out = boxplot(data[, QttVars[i]])
+#   len = length(out)
+# }
+
+```

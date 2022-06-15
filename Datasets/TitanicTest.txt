@@ -1,0 +1,157 @@
+"X"	"Name"	"PClass"	"Age"	"Sex"	"Survived"	"SexCode"
+34	"Brady, Mr John Bertram"	"1st"	41	"male"	0	0
+37	"Brown, Mrs James Joseph (Margaret Molly\" Tobin)\""	"1st"	44	"female"	1	1
+38	"Brown, Mrs John Murray (Caroline Lane Lamson)"	"1st"	59	"female"	1	1
+42	"Candee, Mrs Edward (Helen Churchill Hungerford)"	"1st"	53	"female"	1	1
+51	"Carter, Master William T II"	"1st"	11	"male"	1	0
+57	"Chaffee, Mrs Herbert Fuller (Carrie Constance Toogood)"	"1st"	47	"female"	1	1
+68	"Compton, Mrs Alexander Taylor (Mary Eliza Ingersoll)"	"1st"	64	"female"	1	1
+83	"Dick, Mr Albert Adrian"	"1st"	31	"male"	1	0
+94	"Earnshaw, Mrs Boulton (Olive Potter)"	"1st"	23	"female"	1	1
+103	"Fortune, Miss Mabel"	"1st"	23	"female"	1	1
+107	"Frauenthal, Dr Henry William"	"1st"	49	"male"	1	0
+109	"Frauenthal, Mr Isaac Gerald"	"1st"	44	"male"	1	0
+111	"Frolicher-Stehli, Mr Maxmillian"	"1st"	60	"male"	1	0
+131	"Harper, Mrs Henry Sleeper (Myna Haxtun)"	"1st"	49	"female"	1	1
+133	"Harris, Mrs Henry Birkhardt (Irene Wallach)"	"1st"	36	"female"	1	1
+137	"Hays, Miss Margaret Bechstein"	"1st"	24	"female"	1	1
+147	"Hoyt, Mr Frederick Maxfield"	"1st"	38	"male"	1	0
+150	"Isham, Miss Anne Elizabeth"	"1st"	50	"female"	0	1
+155	"Kenyon, Mr Frederick R"	"1st"	41	"male"	0	0
+164	"Lines, Mrs Ernest H (Elizabeth Lindsey James)"	"1st"	50	"female"	1	1
+182	"Minahan, Dr William Edward"	"1st"	44	"male"	0	0
+185	"Molson, Mr Harry Markland"	"1st"	55	"male"	0	0
+191	"Newsom, Miss Helen Monypeny"	"1st"	19	"female"	1	1
+231	"Silvey, Mrs William Baird (Alice Munger)"	"1st"	39	"female"	1	1
+232	"Simonius-Blumer, Col Alfons"	"1st"	56	"male"	1	0
+235	"Smith, Mr James Clinch"	"1st"	56	"male"	0	0
+246	"Staehlin, Dr Max"	"1st"	32	"male"	1	0
+262	"Thayer, Mr John Borland"	"1st"	49	"male"	0	0
+267	"Tucker, Mr Gilbert Milligan, jr"	"1st"	31	"male"	1	0
+274	"White, Mrs J Stuart (Ella Holmes)"	"1st"	55	"female"	1	1
+278	"Wick, Mrs George Dennick (Martha Hitchcock)"	"1st"	45	"female"	1	1
+280	"Widener, Mr George Dunton"	"1st"	50	"male"	0	0
+284	"Williams, Mr Charles Duane"	"1st"	51	"male"	0	0
+310	"Keeping, Mr Edwin"	"1st"	32	"male"	0	0
+323	"Abelson, Mr Samuel"	"2nd"	30	"male"	0	0
+328	"Angle, Mrs William A (Florence)"	"2nd"	32	"female"	1	1
+329	"Ashby, Mr John"	"2nd"	57	"male"	0	0
+330	"Bailey, Mr Percy Andrew"	"2nd"	18	"male"	0	0
+334	"Bateman, Rev Robert James"	"2nd"	51	"male"	0	0
+335	"Beane, Mr Edward"	"2nd"	32	"male"	1	0
+345	"Botsford, Mr William Hull"	"2nd"	26	"male"	0	0
+348	"Brown, Miss Edith E"	"2nd"	15	"female"	1	1
+349	"Brown, Mr Thomas William Solomon"	"2nd"	45	"male"	0	0
+352	"Bryhl, Mr Kurt Arnold Gottfrid"	"2nd"	25	"male"	0	0
+358	"Caldwell, Mrs Albert Francis (Sylvia Mae Harbaugh)"	"2nd"	26	"female"	1	1
+366	"Chapman, Mr John Henry"	"2nd"	30	"male"	0	0
+372	"Coleridge, Mr Reginald Charles"	"2nd"	29	"male"	0	0
+373	"Collander, Mr Erik"	"2nd"	27	"male"	0	0
+379	"Corbett, Mrs Walter H (Irene Colvin)"	"2nd"	30	"female"	0	1
+387	"Deacon, Mr Percy"	"2nd"	18	"male"	0	0
+390	"del Carlo, Mrs Sebastiano (Argenia Genovese)"	"2nd"	22	"female"	1	1
+401	"Eitemiller, Mr George Floyd"	"2nd"	23	"male"	0	0
+407	"Fox, Mr Stanley H"	"2nd"	38	"male"	0	0
+409	"Funk, Miss Annie C"	"2nd"	38	"female"	0	1
+416	"Gilbert, Mr William"	"2nd"	45	"male"	0	0
+417	"Giles, Mr Edgar"	"2nd"	24	"male"	0	0
+421	"Gillespie, Mr William"	"2nd"	34	"male"	0	0
+430	"Harris, Mr George"	"2nd"	30	"male"	1	0
+435	"Herman, Miss Alice"	"2nd"	24	"female"	1	1
+442	"Hickman, Mr Stanley George"	"2nd"	21	"male"	0	0
+464	"Kantor, Mr Sinai"	"2nd"	34	"male"	0	0
+472	"Kvillner, Mr Johan Henrik Johannesson"	"2nd"	31	"male"	0	0
+473	"Lahtinen, Rev William"	"2nd"	30	"male"	0	0
+480	"LaRoche, Miss Simonne"	"2nd"	3	"female"	1	1
+486	"Louch, Mr Charles Alexander"	"2nd"	48	"male"	0	0
+494	"Mantvila, Rev Joseph"	"2nd"	27	"male"	0	0
+497	"Maybery, Mr Frank H"	"2nd"	20	"male"	0	0
+498	"McCrae, Mr Arthur Gordon"	"2nd"	45	"male"	0	0
+501	"Mellenger, Mrs Elizabeth Anne"	"2nd"	41	"female"	1	1
+517	"Nicholls, Mr Joseph Charles"	"2nd"	19	"male"	0	0
+520	"Nye, Mrs Elizabeth Ramell"	"2nd"	29	"female"	1	1
+522	"Oxenham, Mr Percy Thomas"	"2nd"	22	"male"	1	0
+524	"Pain, Dr Alfred"	"2nd"	24	"male"	0	0
+537	"Quick, Mrs Frederick C (Jane Richards)"	"2nd"	33	"female"	1	1
+547	"Richards, Master William Rowe"	"2nd"	3	"male"	1	0
+555	"Sincock, Miss Maude"	"2nd"	20	"female"	1	1
+556	"Siukonnen, Miss Anna"	"2nd"	30	"female"	1	1
+562	"Sobey, Mr Hayden"	"2nd"	25	"male"	0	0
+564	"Stokes, Mr Philip Joseph"	"2nd"	25	"male"	0	0
+566	"Toomey, Miss Ellen"	"2nd"	50	"female"	1	1
+573	"Waelens, Mr Achille"	"2nd"	22	"male"	0	0
+579	"Watt, Miss Bertha"	"2nd"	12	"female"	1	1
+581	"Webber, Miss Susan"	"2nd"	36	"female"	1	1
+583	"Weisz, Mrs Leopold (Mathilde)"	"2nd"	32	"female"	1	1
+585	"Wells, Miss Joan"	"2nd"	4	"female"	1	1
+597	"Wright, Miss Marion"	"2nd"	26	"female"	1	1
+615	"Aijo-Nirva, Mr Isak"	"3rd"	41	"male"	0	0
+617	"Aks, Master Philip"	"3rd"	0.83	"male"	1	0
+621	"Allen, Mr William Henry"	"3rd"	35	"male"	0	0
+624	"Andersen, Mr Thor Olsvigen"	"3rd"	20	"male"	0	0
+628	"Andersson, Miss Ellis Anna Maria"	"3rd"	2	"female"	0	1
+630	"Andersson, Miss Ida Augusta Margareta"	"3rd"	38	"female"	0	1
+635	"Andreasson, Mr Paul Edvin"	"3rd"	20	"male"	0	0
+636	"Angheloff, Mr Minko"	"3rd"	26	"male"	0	0
+637	"Arnold, Mr Josef"	"3rd"	25	"male"	0	0
+639	"Aronsson, Mr Ernst Axel Algot"	"3rd"	24	"male"	0	0
+650	"Assaf, Mrs Mariana"	"3rd"	45	"female"	1	1
+663	"Badt, Mr Mohamed"	"3rd"	40	"male"	0	0
+678	"Boulos, Master Akar"	"3rd"	6	"male"	0	0
+686	"Bradley, Miss Bridget Delia"	"3rd"	18	"female"	1	1
+689	"Braund, Mr Lewis Richard"	"3rd"	29	"male"	0	0
+703	"Canavan, Mr Patrick"	"3rd"	21	"male"	0	0
+707	"Carlsson, Mr Carl Robert"	"3rd"	24	"male"	0	0
+711	"Carr, Miss Helen"	"3rd"	16	"female"	1	1
+719	"Christmann, Mr Emil"	"3rd"	29	"male"	0	0
+722	"Coelho, Mr Domingos Fernandes"	"3rd"	20	"male"	0	0
+723	"Cohen, Mr Gurshon (Gus)"	"3rd"	19	"male"	1	0
+725	"Coleff, Mr Fotio"	"3rd"	24	"male"	0	0
+727	"Conlin, Mr Thomas Henry"	"3rd"	31	"male"	0	0
+732	"Cook, Mr Jacob"	"3rd"	43	"male"	0	0
+733	"Cor, Mr Bartol"	"3rd"	35	"male"	0	0
+735	"Cor, Mr Ludovik"	"3rd"	19	"male"	0	0
+737	"Coutts, Mrs William (Minnie)"	"3rd"	36	"female"	1	1
+745	"Dahl, Mr Charles Edward"	"3rd"	45	"male"	1	0
+752	"Danbom, Master Gilbert Sigvard Emanuel"	"3rd"	0.33	"male"	0	0
+753	"Danoff, Mr Yoto"	"3rd"	27	"male"	0	0
+754	"Dantchoff, Mr Khristo"	"3rd"	25	"male"	0	0
+757	"Davies, Mr John"	"3rd"	21	"male"	0	0
+762	"Dean, Mrs Bertram (Eva)"	"3rd"	33	"female"	1	1
+767	"De Messemaeker, Mrs William Joseph (Anna)"	"3rd"	36	"female"	1	1
+777	"Dooley, Mr Patrick"	"3rd"	32	"male"	0	0
+778	"Dorkings, Mr Edward Arthur"	"3rd"	19	"male"	1	0
+781	"Drapkin, Miss Jennie"	"3rd"	23	"female"	1	1
+786	"Dyker, Mrs Adolf Fredrik (Anna Elizabeth Judith Andersson)"	"3rd"	22	"female"	1	1
+789	"Eklund, Mr Hans Linus"	"3rd"	16	"male"	0	0
+795	"Emanuel, Miss Virginia Ethel"	"3rd"	5	"female"	1	1
+807	"Ford, Miss Doolina Margaret"	"3rd"	21	"female"	0	1
+808	"Ford, Mr Edward Watson"	"3rd"	18	"male"	0	0
+826	"Goodwin, Mrs Frederick (Augusta)"	"3rd"	43	"female"	0	1
+831	"Goodwin, Master Sidney L"	"3rd"	6	"male"	0	0
+832	"Goodwin, Master William F"	"3rd"	11	"male"	0	0
+833	"Green, Mr George"	"3rd"	40	"male"	0	0
+844	"Hakkarainen, Mr Pekko Pietari"	"3rd"	28	"male"	0	0
+846	"Hampe, Mr Leon"	"3rd"	20	"male"	0	0
+856	"Hedman, Mr Oscar"	"3rd"	27	"male"	1	0
+867	"Hirvonen, Miss Hildur E"	"3rd"	2	"female"	0	1
+873	"Humblin, Mr Adolf Mathias Nicolai Olsen"	"3rd"	42	"male"	0	0
+892	"Johansson, Oscar L"	"3rd"	26	"male"	1	0
+910	"Kalvig, Mr Johannes K Halverson"	"3rd"	21	"male"	0	0
+911	"Karajic, Mr Milan"	"3rd"	30	"male"	0	0
+912	"Karlsson, Mr Einar Gervasius"	"3rd"	21	"male"	1	0
+934	"Kink, Miss Louise Gretchen"	"3rd"	4	"female"	1	1
+935	"Kink, Miss Maria"	"3rd"	22	"female"	0	1
+939	"Klasen, Mr Klas Albin"	"3rd"	18	"male"	0	0
+941	"Krekorian, Mr Neshan"	"3rd"	25	"male"	1	0
+948	"Lane, Mr Patrick"	"3rd"	20	"male"	0	0
+952	"Larsson-Rondberg, Mr Edvard"	"3rd"	22	"male"	0	0
+961	"Lemom, Mr Denis"	"3rd"	21	"male"	0	0
+967	"Lindell, Mr Edvard Bengtsson"	"3rd"	36	"male"	0	0
+1264	"Turja, Miss Anna Sofia"	"3rd"	18	"female"	1	1
+1270	"Van der Planke, Miss Augusta"	"3rd"	18	"female"	0	1
+1272	"Van der Planke, Mrs Jules"	"3rd"	31	"female"	0	1
+1279	"Van Impe, Mrs Jean Baptiste"	"3rd"	30	"female"	0	1
+1294	"Wilkes, Mrs Ellen"	"3rd"	45	"female"	1	1
+1302	"Wittevrongel, Mr Camiel"	"3rd"	36	"male"	0	0
+1312	"Lievens, Mr Rene"	"3rd"	24	"male"	0	0

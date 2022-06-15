@@ -1,0 +1,38 @@
+---
+title: "Untitled"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("C:/Users/ngonyo/Downloads")
+dir()
+SongLen = read.table("SongLength.txt", sep="\t", header = T)
+head(SongLen)
+summary(SongLen)
+dim(SongLen)
+
+#We are going to create a new variable and add that to dataset.
+#we want to identify songs longer than the median as "Longsong" by creating new variable Longsong and labeling these entries with "1"
+
+#LEt's first create an array of 229,0
+LongSong = array(0, length(SongLen$LENGTH))
+LongSong
+
+LongSong[which(SongLen$LENGTH>median(SongLen$LENGTH))] = 1
+LongSong
+
+summary(SongLen)
+SongLen$LongSong = LongSong
+summary(SongLen)
+
+SongLen$LENGTH100 = SongLen$LENGTH + 100
+summary(SongLen)
+
+```
+
+
+

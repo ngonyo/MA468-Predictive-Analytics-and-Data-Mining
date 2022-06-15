@@ -1,0 +1,55 @@
+---
+title: "knn"
+author: "NGonyo"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+this is our third classification mode. we are going to perform multi class classification to Iris dataset. We will be using four measurements on iris flower to classify the flowers into one of 3 species.
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+ITrain=read.table("IrisTrain.txt", sep="\t",header=T)
+head(ITrain)
+ITest=read.table("IrisTest.txt", sep="\t",header=T)
+head(ITest)
+
+#kNN only works with quantitative data. Here is Iris we have 4 quantitative varibles so this works well. #kNN is a lazy learner. Therefore, it doesnt create a model. It does the classification in one step with both test and train dataset together. 
+
+#we need to install 'class' package, and then load the package
+require(class)
+#lets first learn how to run kNN
+#let's pick a starting value for k based on the square root of the number of records in the train dataset
+k = round(sqrt(nrow(ITrain)))
+k
+
+#we will be using knn function as follows: knn(TrainPredictors, TestPredictors, k)
+k
+kNN11 = knn(ITrain[, 1:4], ITest[, 1:4], ITrain$Species, k)
+kNN11
+
+ConfMat = table(Actual = ITest$Species, Predicted = kNN11)
+ConfMat
+Accuracy = (ConfMat[1,1]+ConfMat[2,2]+ConfMat[3,3])/nrow(ITest)
+Accuracy
+
+#Now we will run kNN changing k from 1 to 21 and pick k that gives the best performance to use for kNN classification
+
+for(k in 1:21){
+  kNN = knn(ITrain[, 1:4], ITest[, 1:4], ITrain$Species, k)
+  ConfMat = table(Actual = ITest$Species, Predicted = kNN)
+  Accuracy = (ConfMat[1,1]+ConfMat[2,2]+ConfMat[3,3])/nrow(ITest)
+  out = paste("k value = ", k, "---> Accuracy = ", Accuracy, sep = "")
+  print(out)
+}
+
+#in the above output, highest accuracy is achieved with k = 6, so we will use this as k 
+
+
+
+```

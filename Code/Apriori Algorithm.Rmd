@@ -1,0 +1,65 @@
+---
+title: "Untitled"
+author: "NGonyo"
+date: "4/8/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("~/Documents/MA468/")
+Titanic=read.table("Titanic1.txt", sep = "\t", header = T)
+head(Titanic)
+summary(Titanic)
+
+Titanic[, 1:4] = lapply(Titanic[, 1:4], factor)
+summary(Titanic)
+
+#we will be implemening apriori algorithm using arules package
+require(arules)
+
+#let's blindly generate the association rules using default setting of aprori function
+rules = apriori(Titanic)
+rules
+
+#looks like there were 27 rules generated from the Titanic dataset based on default setting of the function
+inspect(rules)#display / inspect rules
+
+#next lets format the appearance of the ryles to show only those who have survived = yes or survived = no on the right hand side along with minimum support = .05, minimum confidence = .8, min items ona  rule -2
+rules = apriori(Titanic, control=list(verbose=F), parameter = list(minlen = 3, supp = 0.05, confidence = 0.8), appearance = list(rhs=c("Survived=No", "Survived=Yes"), default = "lhs"))
+inspect(rules) #looks like we ended up with 6 rules, lets inspect them
+
+#next we can format the rules by sorting them based on a measure and formatting the number of decimal points you need to display, improving the quality of the rules
+quality(rules) = round(quality(rules), digits = 2)
+inspect(rules)
+
+#sorting the rules by lift
+rules.sorted=sort(rules, by = "lift")
+inspect(rules.sorted)
+
+#lets identify the redundant rules and select only the unique rules to continue
+Redundant = is.redundant(rules.sorted)
+Redundant #we can see second one is redundant
+UR = which(Redundant == FALSE)
+unique.rules = rules.sorted[UR]
+inspect(unique.rules) #done with association rules mining, these rules will move on
+#for group project, filter by confidence, support etc to narrow down rules from long list
+
+#we can use arulesViz package to visualize rules
+require(arulesViz)
+
+#scatter plot of rules:
+plot(unique.rules)
+
+#interactive plot
+plot(unique.rules, method = "graph", control = list(type = "items"), interactive = TRUE)
+
+#parallel coordinate plot
+plot(unique.rules, method = "paracoord", control = list(reorder=TRUE))
+
+#group matrix
+plot(unique.rules, method = "grouped")
+```

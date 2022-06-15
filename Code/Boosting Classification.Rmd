@@ -1,0 +1,54 @@
+---
+title: "Boosting Classification"
+author: "NGonyo"
+date: "3/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+TTrain=read.table("TitanicTrain.txt", sep="\t",header=T)
+head(TTrain)
+TTest = read.table("TitanicTest.txt", sep = "\t", header = T)
+head(TTest)
+
+#Let's convert train dataset qualitative variables in to factor variables
+cols = c(3,5)
+TTrain[, cols]=lapply(TTrain[, cols], factor)
+summary(TTrain)
+
+#we are using 'fastAdaboost' package to apply boosting to titanic classification
+require(fastAdaboost)
+
+#adaboost() is the function to create the ensemble boosting model
+TAda = adaboost(Survived~Age+PClass+Sex, data = TTrain, nIter = 10)
+#nIter denotes number of boosting iterations
+#Let's see what we have in the adaboost classification model
+TAda
+
+#Now predicting survival in the test dataset:
+TTest[, cols]=lapply(TTest[, cols], factor)
+
+#prediction
+TAdaPredict = predict(TAda, newdata = data.frame(TTest[, 3:5]), type = "class")
+TAdaPredict #show prediction output
+
+#what we need is the predicted classification
+TAdaPredict$class
+
+#confusion matrix:
+ConfMat = table(Actual = TTest$Survived, Predicted = TAdaPredict$class)
+ConfMat
+
+
+
+```
+
+
+
+

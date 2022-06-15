@@ -1,0 +1,39 @@
+---
+title: "UntitledProject 2 Visual representation"
+author: "Aaron Neiger"
+date: "4/2/2022"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("~/Desktop/MA 468")
+
+data=read.table("Absenteeism.txt", sep = "\t", header = T)
+data
+
+cols=c(1,2,3,4,5,12,13,15,16)
+data[, cols]=lapply(data[, cols], factor)
+summary(data)
+
+require(ggplot2)
+
+#1.
+ggplot(data = data) + geom_point(mapping = aes(x = Absenteeism.time.in.hours, y = Transportation.expense , color = Education))+labs(x="Hours of Absence", y="Transportation Expense", title = "Hours of Absence based on Education and Transportation Expense")
+
+#2.
+ggplot(data, aes(x =Age, y = Absenteeism.time.in.hours)) + geom_point() + facet_wrap(~ Day.of.the.week)+labs(x="Age", y="Absenteeism time in Hours", title = "Absenteeism time in hours based on Age and day of the week")
+
+#3. 
+ggplot(data, aes(x = Reason.for.absence, y = Absenteeism.time.in.hours, color = Disciplinary.failure)) + geom_jitter(width = .2)+labs(x="Reason for Absence", y="Hours of Absence", title = "Hours of Absence based on Disciplinary Failure and Reason for Absence")
+
+#4.
+ggplot(data=data, aes(x=Absenteeism.time.in.hours, y=Service.time))+theme(axis.text = element_text(size = 10))+geom_point(aes(col= Distance.from.Residence.to.Work), alpha=0.9, size=1, position = position_jitter(width = 0.25, height = 0))+labs(x="Hours of Absence", y="Serivce time in years", title = "Hours of Absence based on Service time and Distance from Work")
+
+
+
+
+```

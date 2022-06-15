@@ -1,0 +1,69 @@
+---
+title: "Decision Tree Classification"
+author: "NGonyo"
+date: "2/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is the second classification algorithm we are learning. one of the advantages of the decision tree classification over logistic regression is that decision tree classification can be used for both binary and multi-class classification. Here we will be using a decision tree for binary classification
+
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+TTrain=read.table("TitanicTrain.txt", sep="\t",header=T)
+head(TTrain)
+
+#Let's convert qualitative variables in to factor variables
+cols = c(3,5)
+TTrain[, cols]=lapply(TTrain[, cols], factor)
+summary(TTrain)
+
+#we need to install r part package 
+
+require(rpart)
+require(rpart.plot)
+
+#Let's create the decision tree model first
+SurviveTree= rpart(Survived~Age+PClass+Sex, method = "class", data = TTrain)
+summary(SurviveTree)
+SurviveTree
+#first splitting atribute is sex. 369 go into male branch and 75 into female branch
+#leaf nodes, or terminal nodes are denoted with *
+
+#let's create the visual graph / tree
+rpart.plot(SurviveTree)
+
+#let's modify the visual tree to show 
+rpart.plot(SurviveTree, type = 4, extra = 2)
+
+#now that we have the decision tree, lets use the test dataset to predict
+TTest = read.table("TitanicTest.txt", sep = "\t", header = T)
+head(TTest)
+cols = c(3,5)
+TTest[, cols] = lapply(TTest[, cols], factor)
+summary(TTest)
+
+#now lets predict same way as we did for logistic regression
+DTPredict = predict(SurviveTree, newdata = data.frame(TTest[, 3:5]), type = "class")
+table(DTPredict)
+
+#next create the confusion matrix and ROC curves to evaluate classification performance
+ConfMat = table(Actual = TTest$Survived, Predicted = DTPredict)
+ConfMat
+
+Accuracy = (ConfMat[1,1]+ConfMat[2,2])/nrow(TTest)
+Accuracy*100
+
+#now roc curve
+require(pROC)
+ROC.DT = roc(TTest$Survived, as.numeric(DTPredict))
+ROC.DT
+plot(ROC.DT)
+
+
+```

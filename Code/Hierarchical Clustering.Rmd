@@ -1,0 +1,89 @@
+---
+title: "Weighted Regression"
+author: "NGonyo"
+date: "3/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+we are going to apply hierarchical clustering to UserKnowledgelevel dataset in two ways:
+a) assuming it is a numerical dataset
+b) using it as a mixed type dataset -- note that this is the best way to handle the userknowledgelevel dataset
+
+```{r}
+#a) assuming it is a numerical dataset
+
+setwd("~/Documents/MA468/")
+dir()
+data=read.table("UserKnowledgeLevel.txt", sep="\t",header=T)
+head(data)
+summary(data)
+
+#we will use the same package as used for kmeans clustering
+require(cluster)
+#we will be using hclust function for hierarchical clustering
+#we need to pass the distance matrix of all observations into the hclust() function
+#dist function will calculate distance of all observations in dataset
+
+#lets first look at an example of how we can use the dist() function to calculate the distance matrix
+x=c(1,2,3,4)
+y=c(2,4,6,9)
+xy = cbind(x,y)
+xy
+dist(xy)
+
+##########################################################
+
+#Let's apply hierarchical clustering
+UKLHclust=hclust(dist(data), method="single")
+UKLHclust
+plot(UKLHclust)
+
+#We can clearly see 4 clusters in the above dendrogram. The "tall clearing" is significantly clear and visible.
+#Since we agreed that 4 clusters are the optimal number of clusters, next we need to "cut the tree" at 4 clusters.
+
+UKLClust4=cutree(UKLHclust, 4)
+UKLClust4
+
+#Next is to add the cluster labels into the dataset like how we did in kmeans clustering. THen perform a thorough post analysis.
+
+data2=cbind(data, Cluster=UKLClust4)
+data2$Cluster=as.factor(data2$Cluster)
+summary(data2)
+#aT the this point use both numerical and graphical descriptive statistics to perform a thorough post analysis.
+
+#############################################################
+# (b) Clustering Mixed Type dataset -- this is what we are applying for Absenteeism dataset
+summary(data)
+#First we need to specify the factor variable
+#KnowledgeLevel is a qualitative variable that needs to be converted into a factor variable
+data$KnowledgeLevel=as.factor(data$KnowledgeLevel)
+summary(data)
+
+#now we have a mixed type dataset with 5 quantitative variables and one qualitative variable
+#We cannot use Euclidean distance to calculate the distances between observation. 
+#Therefore we will be using "gower" distance which is used to find distance between both numeric and qualitative variables. 
+
+#Like above let's first calcuate the distance of the observations
+GDist=daisy(data, metric="gower")
+
+#Now pass the distance matrix into hclust()
+UKLHclust=hclust(GDist)
+UKLHclust
+
+#plot the dendrogram
+plot(UKLHclust)
+
+#A careful investigation showed us that the taller clearing (we are looking at height) is found at  2 clusters, So next let's cut the tree at 2
+UKLClust2=cutree(UKLHclust, 2)
+UKLClust2
+
+#Next attach the labels into the original dataset
+data3=cbind(data, Cluster=UKLClust2)
+data3$Cluster=as.factor(data3$Cluster)
+summary(data3)
+
+```

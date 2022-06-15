@@ -1,0 +1,106 @@
+---
+title: "Cluster Validation"
+author: "NGonyo"
+date: "3/28/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Let's apply some cluster validation techniques to the UserKnowledgeLevel dataset. Here we are assuming it is a numerical dataset. We will be using cluster package to generate solhouette measures and gap statistics for both kmeans and hierarchical clustering on numerical datasets
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+data=read.table("UserKnowledgeLevel.txt", sep="\t",header=T)
+head(data)
+summary(data)
+require(cluster)
+
+#how to apply silhouette measure for kmeans cluster
+set.seed(123456)
+UKL6 = kmeans(data, 6)
+UKL6$cluster
+
+silUKL6 = silhouette(UKL6$cluster, dist(data))
+silUKL6 #shows cluster assigment, closest cluster, sil statistic
+summary(silUKL6) #gives avg silhouette coefficient of each cluster, stats for all sil. values
+
+which(silUKL6[,3]<0)
+
+#lets generate plot of average sil. coeff changing k=2 to 20
+set.seed(123456)
+meanSIL = array(0, 20)
+for(k in 2:20){
+  kmn = kmeans(data,k)
+  silk=silhouette(kmn$cluster, dist(data))
+  meanSIL[k] = mean(silk[, 3])
+  
+}
+plot(meanSIL, pch = 16, type = "b", xlab = "number of clusters", ylab = "Average Silhouette for Kmeans clustering")
+
+#next lets generate simular plot for running hierarchical clustering bu cutting the tree at k=2 to 20
+set.seed(123456)
+meanSIL = array(0, 20)
+for(k in 2:20){
+  HC = hclust(dist(data), method = "single") #deault method is complete
+  cut = cutree(HC, k)
+  silk=silhouette(cut, dist(data))
+  meanSIL[k] = mean(silk[, 3])
+  
+}
+plot(meanSIL, pch = 16, type = "b", xlab = "number of clusters", ylab = "Average Silhouette for Hierarchical clustering")
+
+```
+
+
+############################################################
+####################Gap Statistics##########################
+############################################################
+gap statistics are another measure that we can use to identify the optimal number of clusters in a dataset
+note the function can only handle quantitative datasets
+we will be using the clusGap() function in the cluster package to generate gap statistics values. we will pass the dataset, include the clustering algorithm. to generate the plot of gap statistics, we will use fviz_gap_stat() function in factoextra package, this plot will suggest optimal number of clusters
+
+```{r}
+require(cluster)
+require(factoextra)
+
+#lets run clusgap() for kmeans clustering
+gstat = clusGap(scale(data), FUN = kmeans, K.max = 10, B = 50)
+gstat
+#note that we can plot the gap statistic gap using gstat$Tab[, 3] however we will use fviz_gap_stat() function instead
+fviz_gap_stat(gstat)
+
+#in the above plot we can see k = 2 is optimal number of clusters, denoted by dotted vertical line
+#lets do the same with hierarchical clustering:
+gstat = clusGap(scale(data), FUN = hcut, K.max = 10, B = 50)
+gstat
+fviz_gap_stat(gstat)
+
+```
+
+NbClust package for clsuter evaluation
+
+```{r}
+#next look at NbClust R package which includes about 30 different measures to evaluate clustering. 
+#whats fascinating about this package is, the output gives you the final analysis and suggests the optimal number of clusters. note latest version of package only works with numerical / quant datasets
+#this is one of the neat packages to use if your dataset contains only numerical values
+#when applying NbClust() function, it does the clustering and evaluation together, like how we used clusGap() above. 
+
+require(NbClust)
+#let's first use NbClust with kmeans clustering
+nbKmn = NbClust(data, distance = 'euclidean', method = "kmeans", min.nc = 2, max.nc = 5, index = "all")
+nbKmn
+
+#to access cluster labels of suggested optimal clustering
+nbKmn$Best.partition
+
+#lets perform Nbclust for hierarchical clustering
+nbHC = NbClust(data, distance = 'euclidean', method = "single", min.nc = 2, max.nc = 5)
+nbHC
+
+
+
+```

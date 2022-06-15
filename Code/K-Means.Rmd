@@ -1,0 +1,88 @@
+---
+title: "Kmeans"
+author: "NGonyo"
+date: "3/16/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+we are going to apply k means clustering. k means is a prototype based cluster algorithm where the prototype is a centroid -- which is the cluster mean. We will need to specify a value for k.
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+data=read.table("UserKnowledgeLevel.txt", sep="\t",header=T)
+head(data)
+summary(data)
+
+#check for missing values:
+table(is.na(data))
+#no missing values present
+
+#check for outliers
+boxplot(data)
+#looks like study time variable has outliers. we wont remove outliers but we will be doing a thourough analysis of outliers in postanalysis
+#lets look at the outliers in study time
+boxplot(data$StudyTime)$out
+#let's see the observations that have outlier values for studytime
+STOut = boxplot(data$StudyTime)$out
+STOutRows = which(data$StudyTime %in% STOut)
+STOutRows
+
+#let's see the records
+data[STOutRows,]
+summary(data[STOutRows,]) #note that all Studytime outliers have highest education value (4)
+
+#once you finish data preprocessing, you are ready to do clustering - we will move on now for this class period.
+
+#####################
+#####################
+
+#we will be using the cluster package for kmeans clustering
+require(cluster)
+set.seed(123456) #set seed so first random clustering round is consistent with classmates
+
+#Now we will perform k means clustering.
+#to apply clustering
+kmn2 = kmeans(data, 2)
+#to show cluster labels:
+kmn2$cluster
+#to show total within sum of squares of the clustering:
+kmn2$tot.withinss #we want to minimize this value
+
+#step 1: identify optimal number of clusters
+TWSS = array(0,25)
+for(k in 1:25){
+  kmn = kmeans(data, k)
+  TWSS[k] = kmn$tot.withinss
+}
+plot(1:25, TWSS, xlab = "number of clusters", ylab = "Total Within SS", pch = 6, type = "b", col = "purple")
+#step 2: perform clustering with optimal number of clusters
+#in the above plot we dont see a dignificant decrease once we pass k= 6 so we will use 6 clusters in final clustering
+kmFinal = kmeans(data,6)
+kmFinal
+
+#step 3: post analysis
+#now we will attach cluster labels into the dataset as a new column. this will help us to identify patterns within the clusters
+data2 = cbind(data, Cluster = kmFinal$cluster)
+head(data2)
+
+#let's see summary for each cluster
+for(i in 1:6){
+  clus = subset(data2, Cluster == i)
+  out = paste("########## Cluster ", i, "###########", sep = "")
+  print(summary(clus))
+  print(out)
+}
+
+#graphical description statistics
+require(ggplot2)
+data2[, c(6,7)] = lapply(data2[, 6:7], factor)
+ggplot(data2, aes(x=StudyTime, y = ExamGoals, col = Cluster))+geom_point()+geom_line()
+
+#based on the above plot we can clearly see how the examgoals change is baed on study time. we can see clustee 5 has the lowest pattern on exam goals based on study time. simularly, cluster 2 has highest. we can see within each cluster this pattern is significantly different
+
+```

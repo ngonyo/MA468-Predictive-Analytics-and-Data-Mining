@@ -1,0 +1,28 @@
+---
+title: "ggplot2"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("C:/Users/ngonyo/Downloads")
+dir()
+adultdata = read.table("AdultData.txt", sep="\t", header = T)
+head(adultdata) #show first 5 rows of dataset to see if imported correctly
+str(adultdata) #show info about dataset structure
+
+#load ggplot2
+require(ggplot2)
+
+adultdata$workclass = as.factor(adultdata$workclass)
+ggplot(data = adultdata)
+g1 = ggplot(data = adultdata)
+g1 + geom_histogram(aes(age, color = workclass), bins=20)
+g1 + geom_histogram(aes(age, fill = workclass), bins=20)
+g1 + geom_histogram(aes(age, fill = workclass), bins=20, color = "black")
+
+
+```

@@ -1,0 +1,72 @@
+---
+title: "K-Prototype"
+author: "NGonyo"
+date: "3/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#we are going to apply k-prototype clustering for userknowledgelevel dataset. Note the dataset has one qualitative variable coded as numeric (knowledgelevel given as 1,2,3,4 representing very low, low, medium, high)
+
+#k-prototype clustering works for mixed data (ie both numerical and categorical variables) k-prototype works very simularly to kmeans clustering, where here numerical variables are handled like k means (mean as prototype) and categorical variables are handled with mode as the prototype. simple matching coefficient used for simularity measure. 
+
+setwd("~/Documents/MA468/")
+dir()
+data=read.table("UserKnowledgeLevel.txt", sep="\t",header=T)
+head(data)
+summary(data)
+
+#let's specify the factor variable
+data$KnowledgeLevel = as.factor(data$KnowledgeLevel)
+summary(data)
+#note we have 5 quantiative variables and 1 qualitative variable in the dataset
+
+#we need the clustMixType package
+require(clustMixType)
+
+set.seed(123456)
+#lets first run k proto with k = 2
+UKLKprot2 = kproto(data, 2)
+UKLKprot2
+UKLKprot2$cluster
+UKLKprot2$tot.withinss
+#Let's see the cluster output in a graphical way
+clprofiles(UKLKprot2, data)
+
+#kproto() is used very simularly to kmeans()
+#let's create the total within sum squares plot (TWSS)
+TWSS = array(0, 25)
+for(k in 1:25){
+  kprot = kproto(data, k)
+  TWSS[k] = kprot$tot.withinss
+}
+plot(1:25, TWSS, xlab = "number of clusters", ylab = "Total Within SS", pch = 6, type = "b", col = "purple")
+
+#cl profiles gives colorful output for each variable and how their values belond to each cluster
+#clprofiles(UKLKprot2, data) #check this in console rather than R markdown as it will take longer
+
+#the clustMixType package gives 8 other measures to evaluate clustering. Each of those measures evaluates clustering in different way. Therefore for some we will need to pick optimal number of clusters based on a minimum value of the measure (like TWSS)
+
+#lets create a plot of Silhouette measure, simular to TWSS. note Silhouette only works for k>1
+SIL = array(0, 25)
+for(k in 2:25){
+  kprot = kproto(data, k)
+  SIL[k] = validation_kproto(method = "silhouette", object = kprot)
+}
+plot(2:25, SIL[2:25], xlab = "number of clusters", ylab = "Silhouette measure for clustering", pch = 6, type = "b", col = "purple")
+#here, go with k = 2
+
+#let's create a simular plot based on Cindex
+#note with Cindex we are looking for minimum value
+CIN = array(0, 25)
+for(k in 2:25){
+  kprot = kproto(data, k)
+  CIN[k] = validation_kproto(method = "cindex", object = kprot)
+}
+plot(2:25, CIN[2:25], xlab = "number of clusters", ylab = "Cindex measure for clustering", pch = 6, type = "b", col = "purple")
+
+```

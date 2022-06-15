@@ -1,0 +1,261 @@
+---
+title: "Project 1 Classification Algorithms"
+author: "Jack Michalowski"
+date: "2/26/2022"
+output: word_document
+---
+
+Logistic Regression
+```{r}
+
+setwd("~/Downloads")
+BTrain=read.table("BankReadyForClassification.txt", sep="\t", header = T)
+head(BTrain)
+
+#convert qualitative variables into factor variables
+cols=c(2,3,4,6,7)
+BTrain[, cols]=lapply(BTrain[, cols], factor)
+summary(BTrain)
+
+#We are going to use age, PClass, and sex to predict survival of a given passenger. Note that PClass and sex are factor variables.
+
+#Let's create the logistic regression model
+BankLogReg=glm(y~age+marital+education+default+balance+housing+loan+day+duration+campaign, data=BTrain, family="binomial")
+summary(BankLogReg)
+
+#Next is to apply the log reg model to predict for the test dataset
+BTest=read.table("TestBank.txt", sep="\t", header = T)
+head(BTest)
+
+#convert PClass and Sex to factor variables
+BTest[, c(2,3,4,5,7,8,9,11)]=lapply(BTest[, c(2,3,4,5,7,8,9,11)], factor)
+summary(BTest)
+
+#Predicting survival is 2 steps : first find the probability of survival and then round it to obtain the survival (0 or 1)
+Prob=predict(BankLogReg, newdata = data.frame(BTest[, ]), type="response")
+Prob 
+BPredicted=round(Prob)
+table(BPredicted)
+
+head(BTest)
+head(BPredicted)
+
+#We can combine the TTest dataset and the predicted survivals into a new dataset
+BTestFinal=cbind(BTest, BPredicted)
+head(BTestFinal)
+
+#Table of predicted survivals
+table(BPredicted)
+
+#table of actual survivals
+table(BTest$y)
+
+#confusion table 
+table(Acutal=BTest$y, Predicted=BPredicted)
+
+#Let's create a confusion matrix and give a name so that we can access each and every number through that name.
+ConfMat=table(Actual=BTest$y, Predicted=BPredicted)
+ConfMat
+
+Accuracy=(ConfMat[1,1]+ConfMat[2,2])/nrow(BTest)
+Accuracy
+AccPercent=round(Accuracy, 4)*100
+AccPercent
+paste("Accuracy = ", AccPercent, "%", sep="")
+
+#True Positive Rate 
+TPR=ConfMat[2,2]/(ConfMat[2,1]+ConfMat[2,2])
+TPR
+TPRPercent=round(TPR, 4)*100
+TPRPercent
+
+#Precision
+p=ConfMat[2,2]/(ConfMat[1,2]+ConfMat[2,2])
+p
+pPercent=round(p, 4)*100
+pPercent
+paste("Precision = ", pPercent, "%", sep="")
+
+
+#ROC Curve is a graphical way of evaluating the performance of a classification algorithm, or comparing multiple classifcation algorithms.
+#We need to install pROC package
+#Load the package 
+require(pROC)
+#You pass the actual class variable and the predicted class variable. Note that they need to be numeric.
+ROC.RC=roc(BTest$y, BPredicted)
+ROC.RC
+
+#Let's create the ROC curve
+plot(ROC.RC, col="red")
+
+```
+Decision Tree
+```{r}
+setwd("~/Downloads")
+BTrain=read.table("BankReadyForClassification.txt", sep="\t", header = T)
+head(BTrain)
+
+#Let's convert qualitative variables into factor variables
+cols=c(2,3,4,6,7)
+BTrain[, cols]=lapply(BTrain[, cols], factor)
+summary(BTrain)
+
+#We need to install rpart package to create the decision tree model; and rpart.plot package will help us to create the graphical tree.
+#load the two packages
+require(rpart)
+require(rpart.plot)
+
+#Let's create the decision tree model first
+yTree=rpart(y~age+marital+education+default+balance+housing+loan+day+duration+campaign, method="class", data=BTrain)
+yTree
+
+#Let's create the visual/graphical tree
+rpart.plot(yTree)
+
+#Let's modify the output format of the graphical tree
+rpart.plot(yTree, type=4, extra=2)
+
+#Now that we have the decision tree model and the graph created, let's use the Test dataset to do the prediction.
+setwd("~/Downloads")
+BTest=read.table("TestBank.txt", sep="\t", header = T)
+head(BTest)
+#Convert the PClass and Sex into factor variables
+BTest[, c(2,3,4,5,7,8,9,11)]=lapply(BTest[, c(2,3,4,5,7,8,9,11)], factor)
+summary(BTest)
+
+#We are going to predict the same way we did for log regression
+DTPredict=predict(yTree, newdata=data.frame(BTest[, ]), type="class")
+table(DTPredict)
+
+#Confusion Matrix and ROC Curves 
+ConfMat=table(Actual=BTest$y, Predicted=DTPredict)
+ConfMat
+
+Accuracy=(ConfMat[1,1]+ConfMat[2,2])/nrow(TTest)
+Accuracy*100
+
+p=ConfMat[2,2]/(ConfMat[1,2]+ConfMat[2,2])
+p
+pPercent=round(p, 4)*100
+pPercent
+paste("Precision = ", pPercent, "%", sep="")
+
+#Create the ROC Curve next
+require(pROC)
+ROC.DT=roc(BTest$y, as.numeric(DTPredict))
+ROC.DT
+plot(ROC.DT, col="blue")
+
+
+```
+
+Naive Bayes
+```{r}
+
+setwd("~/Downloads")
+BTrain=read.table("BankReadyForClassification.txt", sep="\t", header = T)
+head(BTrain)
+
+BTest=read.table("TestBank.txt", sep="\t", header = T)
+head(BTest)
+
+#Convert the qual variables in factor variables
+cols=c(2,3,4,6,7)
+BTrain[, cols]=lapply(BTrain[, cols], factor)
+summary(BTrain)
+
+require(e1071)
+NBY=naiveBayes(as.factor(y)~age+marital+education+default+balance+housing+loan+day+duration+campaign, data=BTrain)
+NBY
+
+#Next we can predict the Test dataset
+BTest[, c(2,3,4,5,7,8,9,11)]=lapply(BTest[, c(2,3,4,5,7,8,9,11)], factor)
+summary(BTest)
+
+NBPredict=predict(NBY, newdata=data.frame(BTest[,]), type="class")
+table(NBPredict)
+
+#Confusion Matrix
+ConfMat=table(Actual=BTest$y, Predicted=NBPredict)
+ConfMat
+
+Accuracy=(ConfMat[1,1]+ConfMat[2,2])/nrow(BTest)
+Accuracy
+AccPercent=round(Accuracy, 4)*100
+AccPercent
+paste("Accuracy = ", AccPercent, "%", sep="")
+
+p=ConfMat[2,2]/(ConfMat[1,2]+ConfMat[2,2])
+p
+pPercent=round(p, 4)*100
+pPercent
+paste("Precision = ", pPercent, "%", sep="")
+
+#ROC curve
+require(pROC)
+ROC.NB=roc(BTest$y, as.numeric(NBPredict))
+ROC.NB
+plot(ROC.NB, col="green")
+
+```
+
+Bagging
+
+```{r}
+setwd("~/Downloads")
+BTrain=read.table("BankReadyForClassification.txt", sep="\t", header = T)
+head(BTrain)
+
+BTest=read.table("TestBank.txt", sep="\t", header = T)
+head(BTest)
+
+cols=c(2,3,4,6,7)
+BTrain[, cols]=lapply(BTrain[, cols], factor)
+summary(BTrain)
+
+#Install ipred package
+#Load package
+require(ipred)
+
+# Suppose we want 20 DT's in bagging
+#So the algorithm will create 20 samples from the train dataset and apply the DT alg to each of those samples
+#Here's the bagging model with 20 bags
+Bag=bagging(as.factor(y)~age+marital+education+default+balance+housing+loan+day+duration+campaign, data=BTrain, nbagg=20)
+
+#show 20 trees
+Bag$mtrees
+
+#Predict survival in test
+BTest[, c(2,3,4,5,7,8,9,11)]=lapply(BTest[, c(2,3,4,5,7,8,9,11)], factor)
+
+#Prediction
+BagPred=predict(Bag, newdata=data.frame(BTest[,]))
+table(BagPred)
+
+ConfMat=table(Actual=BTest$y, Predicted=BagPred)
+ConfMat
+
+Accuracy=(ConfMat[1,1]+ConfMat[2,2])/nrow(BTest)
+Accuracy
+AccPercent=round(Accuracy, 4)*100
+AccPercent
+paste("Accuracy = ", AccPercent, "%", sep="")
+
+p=ConfMat[2,2]/(ConfMat[1,2]+ConfMat[2,2])
+p
+pPercent=round(p, 4)*100
+pPercent
+paste("Precision = ", pPercent, "%", sep="")
+
+require(pROC)
+#You pass the actual class variable and the predicted class variable. Note that they need to be numeric.
+ROC.B=roc(BTest$y, as.numeric(BagPred))
+ROC.B
+
+#Let's create the ROC curve
+plot(ROC.B, col="orange")
+
+plot(ROC.RC, col="red");lines(ROC.DT, col="blue");lines(ROC.NB, col="green");lines(ROC.B, col="orange");legend("bottomright", legend = c("Logistic Regression","Decision Tree","Naive Bayes","Bagging"), pch=c(16,16,16), col=c("red","blue","green","orange"))
+
+
+```

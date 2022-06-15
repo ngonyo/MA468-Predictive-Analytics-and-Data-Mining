@@ -1,0 +1,85 @@
+---
+title: "Classification Algorithms"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We will be applying classification algorithms to Titanic dataset. Assume we have already completed data preprocessing. We will be creating the models using the Train dataset and the test dataset is used to assess performance of the model
+
+```{r}
+
+#Algorithm #1 - Logistic Regression
+#this is used for binary classification, ie cannot use if target variable has more than 2 classes.
+
+setwd("C:/Users/ngonyo/Downloads")
+dir()
+TTrain = read.table("TitanicTrain.txt", sep="\t", header = T)
+head(TTrain)
+
+#converting qualitative variables into factor variables
+cols=c(3,5)
+TTrain[, cols]= lapply(TTrain[, cols], factor)
+summary(TTrain)
+
+#We are going to use Age, PClass, and Sex to predict Survival of a given passenger. Note that PClass and Sex are factor variables
+
+#Let's create the logistic regression model
+TitanicLogReg = glm(Survived~Age+PClass+Sex, data = TTrain, family = "binomial")
+summary(TitanicLogReg)
+
+TTest = read.table("TitanicTest.txt", sep="\t", header = T)
+head(TTest)
+
+TTest[,c(3,5)] = lapply (TTest[, c(3,5)], factor)
+summary(TTest)
+
+
+TLRProb = predict(TitanicLogReg, newdata = data.frame(TTest[, 3,5]), type = "response")
+TLRProb
+LRPredictedSurvival = round(TLRProb)
+table(LRPredictedSurvival)
+
+head(TTest)
+head(LRPredictedSurvival)
+
+#we can combine TTest dataset and predicted survivals into new dataset
+TTestFinal = cbind(TTest, LRPredictedSurvival)
+head(TTestFinal)
+
+#Let's take the model and create a confusion matrix, which is a way to assess model accuracy
+table(Actual=TTest$Suvived, Predicted = LRPredictedSurvival)
+
+#Let's create the confusion matrix and write code for classification performance evaluating measures in a way we can reuse them
+ConfMat = table(Actual=TTest$Survived, Predicted = LRPredictedSurvival)
+Confmat
+
+#Accuracy
+Accuracy = (ConfMat[1,1]+ConfMat[2,2])/nrow(TTest)
+Accuracy
+AccPercent = round(Accuracy, 4)*100
+AccPercent
+paste("Accuracy = ", AccPercent, "%", sep = "")
+
+#True Positive Rate
+TPR = Confmat[2,2]/(ConfMat[2,1]+ConfMat[2,2])
+TPR
+TPRPercent = round(TPR, 4)*100
+TPRPercent
+
+#Precision
+p = ConfMat[2,2]/(ConfMat[1,2]+ConfMat[2,2])
+p
+
+#ROC Curve: ROC Curve is way of evaluating the performance of a classification algorithm, or comparing multiple classification algorithms
+require(pROC)
+#you pass the actual class variable and the predicted class variable. Note that they need to be numeric
+ROC.RC = roc(TTest$Survived, LRPredictedSurvival)
+ROC.RC
+
+#Let's create the ROC surve
+plot(ROC.RC, col = "pink")
+
+```

@@ -1,0 +1,47 @@
+---
+title: "Bagging Classification"
+author: "NGonyo"
+date: "2/28/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+TTrain=read.table("TitanicTrain.txt", sep="\t",header=T)
+head(TTrain)
+TTest = read.table("TitanicTest.txt", sep = "\t", header = T)
+head(TTest)
+
+#Let's convert qualitative variables in to factor variables
+cols = c(3,5)
+TTrain[, cols]=lapply(TTrain[, cols], factor)
+summary(TTrain)
+
+#We need to load "ipred" package
+require(ipred)
+
+#suppose we want to include 20 decision trees in bagging - ie we will set nbagg = 20
+#the algorithm will create 20 samples from the train dataset and apply decision tree algorithm to each of those samples
+#here is the bagging algo with 20 bags
+Tbag = bagging(as.factor(Survived)~Age+PClass+Sex, data = TTrain, nbagg = 20)
+
+#Display the 20 trees
+Tbag$mtrees
+
+#Let's predict the survival in the test dataset using our bagging model
+#convert qual variables in test dataset to factor first
+cols = c(3,5)
+TTest[, cols]=lapply(TTest[, cols], factor)
+summary(TTest)
+
+#prediction
+TBagPred = predict(Tbag, newdata = data.frame(TTest[, 3:5]))
+table(TBagPred)
+
+```
+

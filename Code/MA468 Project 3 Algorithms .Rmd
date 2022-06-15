@@ -1,0 +1,155 @@
+---
+title: "MA 468 Group Project 1"
+author: "Aaron Neiger"
+date: "4/25/2022"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+data=read.transactions("TransDataEclat1.csv", sep = ",", header = T)
+head(data)
+data
+itemFrequencyPlot(data)
+#inspect(data) it is reading 
+#ECLAT
+require(arules)
+require(Matrix)
+
+#Removing bottom rows with no values 
+
+itemsets=eclat(data, parameter = list(supp=0.0003, minlen=10))
+itemsets
+inspect(itemsets)
+
+
+
+#Rules
+rules=ruleInduction(itemsets, data, confidence=0.8, control=list(verbose=FALSE))
+inspect(rules)
+ruleInduction(itemsets, confidence =0.8, )
+#Removing redundent rules 
+redundent=is.redundant(rules)
+redundent
+UR=which(redundent==FALSE)
+unique.rules=rules[UR]
+inspect(unique.rules)
+
+#Frequent item lists 
+itemFrequency(data)
+
+#Plot
+itemFrequencyPlot(data)
+
+
+```
+
+
+```{r}
+#Apriori Algoritm 
+
+setwd("~/Desktop/MA 468")
+data=read.table("TransDataFinal.csv", sep = ",", header = T)
+data
+
+data[, 1:19]=lapply(data[, 1:19], factor)
+summary(data)
+
+#Blindly generated association rules based on the defualt settigns of the apriori function
+rules=apriori(data)
+rules
+
+
+#Inspect the rules
+inspect(rules)
+
+#Next let's format the appearance ofrules to show only those who have "Survive=yes" or "Survived=No" on the right hand side along with minimum support=0.5 and minimum confidence=0.8
+rules=apriori(data, control = list(verbose=F), parameter = list(minlen=10, supp=0.0003, confidence=0.8))
+rules
+inspect(rules)
+
+#Next we can format the rules by sorting them basd on a measure and formatting the number of decimal points you need to display 
+#i.e we are improving the quality of the rules
+quality(rules)=round(quality(rules), digits = 2)
+inspect(rules)
+
+#Sorting the rules by lift
+rules.sorted=sort(rules, by="lift")
+inspect(rules.sorted)
+
+#Let's identify the redundent rules and select only the unique rules to continue
+redundent=is.redundant(rules.sorted)
+redundent
+
+UR=which(redundent==FALSE)
+unique.rules=rules[UR]
+inspect(unique.rules)
+
+#arulesviz package to see them 
+require(arulesViz)
+
+#Scatter plot
+plot(unique.rules)
+
+#Interactive plot 
+plot(unique.rules, method = "graph", control = list(type="items"), interactive = TRUE)
+
+#Parallel coordinate plot
+plot(unique.rules, method="paracoord", control=list(reorder=TRUE) )
+
+#Group
+plot(unique.rules, method="grouped")
+
+
+
+```
+
+
+```{r}
+#FP Growth
+
+setwd("~/Desktop/MA 468")
+
+
+data=read.table("TransDataFinal.csv", sep = ",", header = T)
+
+#Convert factor variables - if needed 
+data[, 1:19]=lapply(data[, 1:19], factor)
+summary(data)
+
+
+#Load rCBA package 
+require(rCBA)
+
+#Put data in data frame 
+transdata=as.data.frame(data)
+is.data.frame(transdata)
+
+
+#Fp-growth algorithm 
+rules=fpgrowth(transdata, support=0.0003, confidence=0.8, consequent = "Survived", parallel=FALSE)
+rules
+inspect(rules)
+
+#Remove redundent rules
+redundent=is.redundant(rules)
+UR=which(redundent==FALSE)
+unique.rules=rules[UR]
+inspect(unique.rules)
+
+sorted.u.rules=sort(unique.rules, by="lift")
+inspect(sorted.u.rules)
+
+
+
+
+
+
+
+
+```

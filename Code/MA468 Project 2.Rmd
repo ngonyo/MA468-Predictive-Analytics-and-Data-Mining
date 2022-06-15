@@ -1,0 +1,196 @@
+---
+title: "Untitled"
+author: "NGonyo"
+date: "3/23/2022"
+output: html_document
+---
+
+The database was created with records of absenteeism at work from July 2007 to July 2010 at a 
+courier company in Brazil.
+
+1. Individual identification (ID) 
+2. Reason for absence (ICD). Absences attested by the International Code of Diseases (ICD) stratified into 21 categories (I to XXI). And 7 categories without (CID) 
+3. Month of absence 
+4. Day of the week (Monday (2), Tuesday (3), Wednesday (4), Thursday (5), Friday (6)
+5. Seasons (summer (1), autumn (2), winter (3), spring (4)) 
+6. Transportation expense 
+7. Distance from Residence to Work (kilometers) 
+8. Service time 
+9. Age 
+10. Work load Average/day 
+11. Hit target 
+12. Disciplinary failure (yes=1; no=0) 
+13. Education (high school (1), graduate (2), postgraduate (3), master and doctor (4)) 
+14. Son (number of children) 
+15. Social drinker (yes=1; no=0) 
+16. Social smoker (yes=1; no=0) 
+17. Pet (number of pet) 
+18. Weight
+19. Height 
+20. Body mass index 
+21. Absenteeism time in hours 
+
+a) Create a random sample of 500 records from the original dataset. (As soon as you create this dataset 
+save the dataset to do the following) 
+
+The  dataset  has  qualitative  variables  which  are  given  in  numerical  values,  and  quantitative variables. Treat the dataset as a mixed type dataset. 
+
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+absent=read.table("AbsenteeismDatasetClustering.txt", sep=";",header=T)
+head(absent)
+dim(absent)
+str(absent)
+summary(absent)
+
+#the first step of the project is to randomly select 500 records from the dataset, as we wish to only use 500 of the records, as stated in the project description.
+#We will randomly generate 500 row numbers and extract those rows from absent dataset
+#absent500=sample(1:740, 500, replace = F)
+absent500
+absent1 = absent[absent500, ]
+dim(absent1)
+
+#lets save the dataset with 500 records
+write.table(absent1, "Absenteeism.txt", sep="\t", row.names = F)
+absent=read.table("Absenteeism.txt", sep="\t",header=T)
+summary(absent)
+dim(absent)
+
+```
+
+
+b) Check whether there are outliers or cells with missing values and report and discuss your finding. Do not remove outliers. Remove only the rows if there are any missing values. 
+
+```{r}
+absent=read.table("Absenteeism.txt", sep="\t",header=T)
+#the next step of preprocessing is to remove all the rows with missing values.
+table(is.na(absent))
+#looks like there are no missing values present, so we can move on
+
+#now we will check for outliers in all variables
+boxplot(absent, horizontal = F, col = "purple")
+#we can see there are outliers present in variable 6, 8, 9, 10, 11, 12, 13, 16, 17, 19, 21
+colnames(absent)
+#we can see these rows correspond to the following variables: Transportation.expense, Service.time, Age, Work.load.Average.day, Hit.target, Disciplinary.failure, Education, Social.smoker, Pet, Height, Absenteeism.time.in.hours
+#we will not be removing outliers in this project
+```
+
+Provide numerical descriptions of the variables and interpret them 
+
+```{r}
+#for numeric description of dataset, we will need summary statistics for each quantitative variable
+#we will need summary statistics for following variables:Transportation Expense, Distance from residence to Work, Service time, Age, Work load average / day, hit target, son, pet, weight, height, body mass index, absenteeism time in hours
+
+
+summary(absent$Transportation.expense)
+sd(absent$Transportation.expense)
+
+summary(absent$Distance.from.Residence.to.Work)
+sd(absent$Distance.from.Residence.to.Work)
+
+summary(absent$Service.time)
+sd(absent$Service.time)
+
+summary(absent$Age)
+sd(absent$Age)
+
+summary(absent$Work.load.Average.day)
+sd(absent$Work.load.Average.day)
+
+summary(absent$Hit.target)
+sd(absent$Hit.target)
+
+summary(absent$Son)
+sd(absent$Son)
+
+summary(absent$Pet)
+sd(absent$Pet)
+
+summary(absent$Weight)
+sd(absent$Weight)
+
+summary(absent$Height)
+sd(absent$Height)
+
+summary(absent$Body.mass.index)
+sd(absent$Body.mass.index)
+
+summary(absent$Absenteeism.time.in.hours)
+sd(absent$Absenteeism.time.in.hours)
+
+```
+
+Provide  4  different  multivariate  (combining  at  least  3  variables)  ggplot2  data  visuals  for the dataset. Use ggplot2 to generate appropriate graphical descriptions of the dataset. ggplot2 plots 
+should conform to ACCENT principles. Justify the purpose/use of the graphs with respect to the 
+dataset and interpret them. Be creative. 
+
+```{r}
+require(ggplot2)
+attach(absent)
+summary(absent)
+
+ggplot(absent, aes(x = Work.load.Average.day, y = Absenteeism.time.in.hours, color = as.factor(Disciplinary.failure))) + geom_point()
+
+ggplot(absent, aes(x = Work.load.Average.day, y = Absenteeism.time.in.hours, color = as.factor(Seasons))) + geom_point()
+
+#g g p l o t ( Housing , a e s ( x=Home . Value , f i l l =r e g i o n ) ) +
+#geom h i s t o g r a m ()+ f a c e t wrap (  ̃ r e g i o n , ncol =3)
+
+ggplot(absent, aes(x = Month.of.absence)) + geom_histogram() + facet_wrap(~Day.of.the.week)
+
+ggplot(absent, aes(x = Month.of.absence,)) + geom_histogram(col = "blue", fill = "cyan") 
+
+#Day.of.the.week
+```
+
+PCA
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+absent=read.table("Absenteeism.txt", sep="\t",header=T)
+head(absent)
+str(absent)
+dim(absent)
+
+#we will be applying mixed PCA as there are a mix of quantiative and qualitative variables in our dataset. note we have no response variable here, usually this would have to be omitted
+#require mixed PCA package:
+require(PCAmixdata)
+
+#the first step of mixed PCA is to separate the quantiative and qualitative variables
+Train.Quanti = splitmix(absent)$X.quanti
+head(Train.Quanti)
+
+Train.Quali = splitmix(absent)$X.quali
+head(Train.Quali)
+
+absentPCA = PCAmix(Train.Quanti, Train.Quali, ndim = 21, rename.level = TRUE)
+absentPCA$eig
+
+#based on the eigenvalue approach, we select PC's with eigenvalues greater than 1, so we will select the first 9 PC's
+#based on the cumulative proportion approach, we would select the first 11 PC's assuming we want to preserve 80% of the dataset's variance.
+
+plot(absentPCA$eig[, 1])
+plot(absentPCA$eig[, 1], type = "b", pch = 16, col = "purple")
+
+#based on the screeplot, it seems that after 14 it levels out, so we select first 14 PC's
+
+summary(absentPCA)
+#note these are squared loadings, not loadings matrix. we want to keep variables with an |r| above .5, so we will select the variables with a squared r above .25
+#based on this criteria, we only end up dropping one variable, seasons. Because this leaves 20 variables remaining, which barely changed the dataset, we will opt to keep variables with a squared r above .30
+#based on our new criteria, we drop the following variables: Day.of.the.week, Seasons, Hit.target, Son, Social.smoker, Pet,  Absenteeism.time.in.hours
+colnames(absent)
+#the associated column numbers are 4, 5, 11, 14, 16, 17, 21
+
+AbsentAfterPCA = absent[, -c(4, 5, 11, 14, 16, 17, 21)]
+head(AbsentAfterPCA)
+dim(AbsentAfterPCA)
+str(AbsentAfterPCA)
+write.table(AbsentAfterPCA, "AbsentAfterPCA.txt", sep="\t", row.names = F)
+
+```
+
+
+

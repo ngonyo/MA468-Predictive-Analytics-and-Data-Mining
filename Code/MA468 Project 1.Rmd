@@ -1,0 +1,277 @@
+---
+title: "468 Project 1"
+author: "NGonyo"
+date: "2/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Variables:
+1: age - age
+2: job - type of job (categorical)
+3: marital - marital status (categorical: 'divorced','married','single','unknown') 
+4: education (categorical) 
+5: default - does customer have credit in default
+6: balance - balance of loan***
+7: housing - does customer have housing loan
+8: loan - does customer have personal loan
+9: contact - contact communication type (categorical: 'cellular','telephone')
+10: day - last contact day of the week (categorical: 'mon','tue','wed','thu','fri')
+11: month - last contact month of year (categorical: 'jan', 'feb', 'mar', ..., 'nov', 'dec')
+12: duration - last contact duration, in seconds (numeric). 
+Important note: this attribute highly affects the output target (e.g., if duration=0 then y='no')
+13 - campaign: number of contacts performed during this campaign and for this client (numeric, includes last contact)
+14 - pdays: number of days that passed by after the client was last contacted from a previous campaign (numeric; 999 means client was not previously contacted)
+15 - previous: number of contacts performed before this campaign and for this client (numeric)
+16 - poutcome: outcome of the previous marketing campaign (categorical: 'failure','nonexistent','success')
+
+Response variable:
+17 - y - has the client subscribed to a term deposit? (binary: 'yes','no')
+
+_____________
+
+Preprocessing - Creation of Random Sample, Missing Entry Removal
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+bank=read.table("bank-full.csv", sep=";",header=T)
+head(bank)
+dim(bank)
+str(bank)
+summary(bank)
+
+#the first step of the project is to randomly select 5000 records from the dataset, as we wish to only use 5000 of the records, as stated in the project description.
+#We will randomly generate 5000 row numbers and extract those rows from bank dataset
+#bank5000=sample(1:45211, 5000, replace = F)
+bank5000
+bank1 = bank[bank5000, ]
+dim(bank1)
+
+#to start preproccessing lets first convert all the factor variables
+summary(bank1)
+colnames(bank1)
+#we can see that job, marital, education, default, housing, loan, contact, month, poutcome, and y are all factor variables and must be converted. 
+#their respective column numbers are 2, 3, 4, 5, 7, 8, 9, 11, 16, 17 
+cols= c(2,3,4,5,7,8,9,11,16,17)
+bank1[, cols]=lapply(bank1[, cols], factor)
+summary(bank1)
+str(bank1)
+#we have successfuly converted all factor variables.
+
+#the next step of preprocessing is to remove all the rows with missing values.
+table(is.na(bank1))
+#looks like there are no missing values present, so we can move on
+```
+
+Outlier Removal
+
+```{r}
+#Now we will perform outlier removal 
+#let's generate boxplots for each quantitative variable to check for the presence of outliers.
+summary(bank1)
+attach(bank1)
+#the variables which we have to check for outliers are age, balance, duration, campaign, pdays, previous
+
+boxplot(age, horizontal = T, col="green", main="Age boxplot") #outliers present
+boxplot(balance, horizontal = T, col="green", main="Balance boxplot") #outliers present
+boxplot(duration, horizontal = T, col="green", main="Duration boxplot") #outliers present
+boxplot(campaign, horizontal = T, col="green", main="Campaign Status boxplot")#outliers present
+boxplot(pdays, horizontal = T, col="green", main="P Days Worked boxplot") #outliers present
+boxplot(previous, horizontal = T, col="green", main="Previous boxplot") #outliers present
+
+#we must remove outliers for age, balance, duration, campaign, pdays, previous. This will be done one at a time in case outliers for one variable are removed in a previous outlier removal.
+
+AgeOutliers=boxplot(age, horizontal = T)$out
+AgeOutliers
+AgeOutlierRows=which(age %in% AgeOutliers)
+AgeOutlierRows
+bank2=bank1[-AgeOutlierRows , ]
+boxplot(bank2$age, horizontal = T, col="purple", main="Age boxplot (after outlier removal)")
+dim(bank1)
+dim(bank2)
+
+balanceOutliers=boxplot(bank2$balance, horizontal = T)$out
+balanceOutliers
+balanceOutlierRows=which(bank2$balance %in% balanceOutliers)
+balanceOutlierRows
+bank3=bank2[-balanceOutlierRows , ]
+boxplot(bank3$balance, horizontal = T, col="purple", main="Balance boxplot (after outlier removal)")
+dim(bank2)
+dim(bank3)
+
+durationOutliers=boxplot(bank3$duration, horizontal = T)$out
+durationOutliers
+durationOutlierRows=which(bank3$duration %in% durationOutliers)
+durationOutlierRows
+bank4=bank3[-durationOutlierRows , ]
+boxplot(bank4$duration, horizontal = T, col="purple", main="Duration boxplot (after outlier removal)")
+dim(bank3)
+dim(bank4)
+
+campaignOutliers=boxplot(bank4$campaign, horizontal = T)$out
+campaignOutliers
+campaignOutlierRows=which(bank4$campaign %in% campaignOutliers)
+campaignOutlierRows
+bank5=bank4[-campaignOutlierRows , ]
+boxplot(bank5$campaign, horizontal = T, col="purple", main="campaign boxplot (after outlier removal)")
+dim(bank4)
+dim(bank5)
+
+
+pdaysOutliers=boxplot(bank5$pdays, horizontal = T)$out
+pdaysOutliers
+pdaysOutlierRows=which(bank5$pdays %in% pdaysOutliers)
+pdaysOutlierRows
+bank6=bank5[-pdaysOutlierRows , ]
+boxplot(bank6$pdays, horizontal = T, col="purple", main="pdays boxplot (after outlier removal)")
+dim(bank5)
+dim(bank6)
+
+previousOutliers=boxplot(bank6$previous, horizontal = T, col="purple", main="Previous boxplot (after outlier removal)")$out
+previousOutliers
+#we can see our outlier removal for the other variables already got rid of the outliers in the previous variable, so we are done now.
+
+#Now we removed all the outliers, let's save the dataset
+write.table(bank6, "BankData_no_Outliers.txt", sep="\t", row.names = F)
+bank0=read.table("BankData_no_Outliers.txt", sep="\t",header=T)
+head(bank0)
+str(bank0)
+summary(bank0)
+summary(bank6)
+#after outlier removal, we are left with 3084 rows of the original 5000 sample.
+
+```
+
+Visual & Numeric Description of Dataset
+
+```{r}
+#for numeric description of dataset, we will need summary statistics for each quantitative variable
+summary(bank6)
+#we skip the quantitative variables pdays and previous because their values are -1 and 0 for every entry, respectively
+
+summary(bank6$age)
+sd(bank6$age)
+
+summary(bank6$balance)
+sd(bank6$balance)
+
+summary(bank6$duration)
+sd(bank6$duration)
+
+summary(bank6$campaign)
+sd(bank6$campaign)
+
+
+```
+
+Creation of Test and Train Datasets
+
+```{r}
+summary(bank6)
+#before we go any further, let's remove the variables pdays and previous as they are constants and wont be useful in our model. note that poutcome is also a constant.
+bank6[,14]
+bank6[,15]
+bank6[,16]
+drop=c(14,15,16)
+bank7=bank6[, -drop]
+summary(bank7)
+
+#now let's create the test and train datasets
+
+dim(bank7)
+0.8*(dim(bank7))
+#since there are 3084 rows in our dataset, we need to take out (.8*3084= approx 2467) rows and put them into the training dataset. the remaining rows will be in the testing dataset.
+#We will randomly generate 18240 row numbers and extract those rows 
+
+#randomrowsBANK=sample(1:3084, 2467, replace = F)
+randomrowsBANK
+TrainBank = bank7[randomrowsBANK, ]
+dim(TrainBank)
+#Now remove those rows from the dataset to get the remaining rows into the Test dataset
+TestBank = bank7[-randomrowsBANK, ]
+dim(TestBank)
+write.table(TrainBank, "TrainBank.txt", sep="\t", row.names = F)
+write.table(TestBank, "TestBank.txt", sep = "\t", row.names = F)
+
+summary(TrainBank)
+
+
+```
+
+PCA
+
+```{r}
+setwd("~/Documents/MA468/")
+dir()
+TrainBank=read.table("TrainBank.txt", sep="\t",header=T)
+head(TrainBank)
+
+#we will be applying mixed PCA as there are a mix of quantiative and qualitative variables in our dataset. note we will omit the response variable which is called "y" in this case.
+TrainBankPCA = TrainBank[, -c(14)]
+head(TrainBankPCA)
+dim(TrainBankPCA)
+#require mixed PCA package:
+require(PCAmixdata)
+
+#the first step of mixed PCA is to separate the quantiative and qualitative variables
+Train.Quanti = splitmix(TrainBankPCA)$X.quanti
+head(Train.Quanti)
+
+Train.Quali = splitmix(TrainBankPCA)$X.quali
+head(Train.Quali)
+
+BankPCA = PCAmix(Train.Quanti, Train.Quali, ndim = 13, rename.level = TRUE)
+BankPCA$eig
+
+#based on the eigenvalue approach, we select PC's with eigenvalues greater than 1, so we will select the first 17 PC's
+#based on the cumulative proportion approach, we would select the first 25 PC's assuming we want to preserve 80% of the dataset's variance.
+
+plot(BankPCA$eig[, 1])
+plot(BankPCA$eig[, 1], type = "b", pch = 16)
+
+#based on the screeplot, it seems that after 9 it levels out, so we select first 9 PC's
+
+summary(BankPCA)
+#note these are squared loadings, not loadings matrix. we want to keep variables with an |r| above .5, so we will select the variables with a squared r above .25
+#based on this criteria, we will select the following variables: age, day, duration, campaign, job, marital, education, housing, contact, month. the respective variable columns are 1, 3, 4, 5, 6, 7, 8, 10, 12, 13
+
+TrainBankAfterPCA = TrainBank[, c(1, 3, 4, 5, 6, 7, 8, 10, 12, 13, 14)]
+head(TrainBankAfterPCA)
+dim(TrainBankAfterPCA)
+```
+
+Addressing Class Imbalance Problem
+
+```{r}
+#class imbalance occurs when the response variable contains an imbalance in response type frequencies.
+summary(TrainBankAfterPCA)
+#we can see there are only 135 instances of the response variable "y" as yes and 2332 instances of the response variable "y" being no. We will apply both oversampling and undersampling to address this problem. I will over sample 3 times to get yes up to a higher number then undersample the no instances as follows:
+
+y_is_yes=subset(TrainBankAfterPCA, y=="yes")
+summary(y_is_yes)
+y_is_no=subset(TrainBankAfterPCA, y=="no")
+summary(y_is_no)
+
+duplicate=rep(1:135, 3)
+length(duplicate)
+
+yyes405=y_is_yes[duplicate, ]
+summary(yyes405)
+dim(yyes405)
+
+#now we apply undersampling to the "no" variable to get it to match the 405 yes observations.
+#rnd=sample(1:2332, 405, replace=FALSE)
+yno405=y_is_no[rnd, ]
+summary(yno405)
+
+BankBalanced2=rbind(yyes405, yno405)
+summary(BankBalanced2)
+#the dataset is now balanced and we can finally move onto the classification algorithms
+
+write.table(BankBalanced2, "BankReadyForClassification.txt", sep = "\t", row.names = F)
+dim(BankBalanced2)
+```

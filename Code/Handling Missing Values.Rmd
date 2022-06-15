@@ -1,0 +1,65 @@
+---
+title: "Untitled"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("C:/Users/ngonyo/Downloads")
+dir()
+data = read.table("AutoMPG.txt", sep="\t", header = T)
+head(data)
+summary(data)
+
+#we are going to handle missing values using three methods:
+#1. we can remove rows that contain missing values
+#2. estimate values for missing values
+#3. keep them if model being used allows for it
+
+#converting the factor variables:
+colnames(data)
+cols=7:8
+data[, cols]=lapply(data[, cols], factor)
+str(data)
+
+summary(data)
+#note there are "NA's" shown for MPG (8) and Horsepower (6) so we have at least 14 missing values
+#note that model year might have some missing values which arent shown
+#LEt's verify model year, note that it is a factor variable, so following will show frequency
+summary(data$ModelYear)
+#It doesnt look like there are missing values in ModelYear variable
+
+#To find missing values we will use the is.na() function - which will return true if missing 
+is.na(data) #show all rows
+table(is.na(data)) #shows there are exactly 14 cells with missing values
+which(is.na(data)) #show only missing value rows. note this doesn't show which variable in the row has missing cell
+
+#Handling missing values one variable at a time: note we already know MPG and Horsepower are the variables we need to examine
+#first remove missing values based on MPG
+MPGNARows = which(is.na(data$MPG)==TRUE)
+MPGNARows
+#Remove them from the dataset
+data2 = data[-MPGNARows, ]
+dim(data2)
+dim(data) #note the data contains 8 less rows, which matches number from initial missing check
+
+#repeating for Horsepower:
+HPNARows = which(is.na(data2$Horsepower)==TRUE)
+HPNARows
+#Remove them from the dataset
+data3 = data2[-HPNARows, ]
+dim(data3)
+dim(data2) #note the data contains 8 less rows, which matches number from initial missing check
+
+#Verify missing rows have been removed:
+table(is.na(data3)) #all false meaning all missing values have been removed
+
+#Let's save data3
+write.table(data3, "AutoMPGnoNAs.txt", sep="\t")
+
+
+
+```
